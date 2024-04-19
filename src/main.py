@@ -2,23 +2,26 @@
 
 from transformers import pipeline
 
-# text generation
-textgen_prompt = "Could you please explain to me what is the meaning of"
-
-classifier = pipeline("text-generation", model="distilgpt2")
-answer = classifier(textgen_prompt,
-                    num_return_sequences=5,
-                    truncation=True,
-                    max_length=50)
-
-for dicty in answer:
-    for label, gen in dicty.items():
-        print(f"{label}: {gen}")
 
 # mask filling
-mask_prompt = "Who the fuck killed my <mask>."
-unmasker = pipeline("fill-mask")
+mask_prompt = "This course will teach you all about [MASK] models."
+unmasker = pipeline("fill-mask", model="bert-base-cased")
+answers = unmasker(mask_prompt, top_k=3)
 
-unmasked = unmasker(mask_prompt, top_k=2)
-for el in unmasked:
-    print(el['sequence'])
+for ans in answers:
+    print(ans['sequence'])
+
+# named entity recognition
+ner = pipeline("ner", grouped_entities=True)
+entities = ner("Mary is a writer.")
+
+print(entities)
+
+# question answerer
+q_a = pipeline("question-answering")
+context_answer = q_a(
+    question="What is my name",
+    context="They said that I, Mister Deathly hallow, must go on vacation."
+)
+
+print(context_answer)
