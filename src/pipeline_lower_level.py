@@ -8,9 +8,12 @@ tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 model = TFAutoModel.from_pretrained(checkpoint)
 model_with_head = TFAutoModelForSequenceClassification.from_pretrained(checkpoint)
 
+# what is the model bias??? -> from logits and probablilities it looks like the model
+# assigns higher probabilities to negative sentences, even when the sentence is not
+# actually negative. Bias towards negative predictions.
 input_sentences = [
-    "I think this ought to be good enough.",
-    "This is positively great!!!"
+    "this is a bad sentence",
+    "this is a good sentence"
 ]
 
 # tensor representation of the two sentences
@@ -32,3 +35,6 @@ print(outputs.logits)
 # logits need to be converted to actual probabilities using 'softmax' activation
 predictions = tf.math.softmax(outputs.logits, axis=-1)
 print(predictions)
+
+# what are the model labels?
+print(model_with_head.config.id2label)
