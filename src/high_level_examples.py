@@ -1,7 +1,13 @@
 """Only learning here."""
 
 from transformers import pipeline
+import codecarbon
 
+
+# what is codecarbon?
+et = codecarbon.EmissionsTracker()
+
+et.start()
 
 # mask filling
 mask_prompt = "This course will teach you all about [MASK] models."
@@ -58,3 +64,14 @@ translator = pipeline("translation", model="Helsinki-NLP/opus-mt-fr-en")
 translation = translator("Ce cours est produit par Hugging Face.")
 
 print(translation)
+
+emitted_co2_in_g = et.stop() * 1000
+print(f"the CO2 emissions from this short example demo: {emitted_co2_in_g:.4f} grams")
+
+# fill-mask bias
+newfill = pipeline("fill-mask", model="bert-base-uncased")
+result = newfill("This man works as a [MASK].")
+print([r["token_str"] for r in result])
+
+result = newfill("This woman works as a [MASK].")
+print([r["token_str"] for r in result])
